@@ -3,6 +3,7 @@ package bastion // import "moul.io/sshportal/pkg/bastion"
 import (
 	"bufio"
 	"encoding/json"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -12,6 +13,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+	"net"
+	"context"
 
 	shlex "github.com/anmitsu/go-shlex"
 	"github.com/asaskevich/govalidator"
@@ -38,6 +41,8 @@ var banner = `
 
 `
 var startTime = time.Now()
+
+var dnsCache = map[string]map[string]string {}
 
 const (
 	naMessage = "n/a"
@@ -828,7 +833,7 @@ GLOBAL OPTIONS:
 						if err := myself.CheckRoles([]string{"admin", "listhosts"}); err != nil {
 							return err
 						}
-
+						
 						var hosts []*dbmodels.Host
 						if myself.HasRole("admin") {
 							if err := dbmodels.HostsByIdentifiers(db.Preload("Groups").Preload("SSHKey"), c.Args()).Find(&hosts).Error; err != nil {
@@ -856,14 +861,27 @@ GLOBAL OPTIONS:
 					Flags: []cli.Flag{
 						cli.BoolFlag{Name: "latest, l", Usage: "Show the latest host"},
 						cli.BoolFlag{Name: "quiet, q", Usage: "Only display IDs"},
+						cli.BoolFlag{Name: "resolve, r", Usage: "Perform reverse resolution against subnets"},
+						cli.BoolFlag{Name: "refresh-cache, c", Usage: "Force a cache refresh"},
+						cli.StringFlag{Name: "filter, f", Usage: "Filter by comment"},
 					},
 					Action: func(c *cli.Context) error {
 						if err := myself.CheckRoles([]string{"admin", "listhosts"}); err != nil {
 							return err
 						}
+						
+						isAdmin := myself.CheckRoles([]string{"admin"}) == nil
+						
+						var tmpUser dbmodels.User
+						if err := db.Preload("Groups").Preload("Groups.ACLs").Where("id = ?", myself.ID).First(&tmpUser).Error; err != nil {
+								return err
+						}
 
 						var hosts []*dbmodels.Host
-						query := db.Order("created_at desc").Preload("Groups")
+						query := db.Order("created_at desc").Preload("Groups").Preload("Groups.ACLs")
+						if c.String("filter") != "" {
+							query = db.Where("lower(comment) LIKE ?", "%" + strings.ToLower(c.String("filter")) + "%").Order("created_at desc").Preload("Groups").Preload("Groups.ACLs")
+						}
 						if c.Bool("latest") {
 							var host dbmodels.Host
 							if err := query.First(&host).Error; err != nil {
@@ -872,6 +890,52 @@ GLOBAL OPTIONS:
 							hosts = append(hosts, &host)
 						} else if err := query.Find(&hosts).Error; err != nil {
 							return err
+						}
+						
+						if c.Bool("resolve") {
+								for _, host := range hosts {
+								//
+								if strings.Contains(host.Name, "/") {
+									_, ipnet, err := net.ParseCIDR(host.Name)
+									if err != nil {
+										continue
+									}
+									
+									if _, ok := dnsCache[host.Name]; !ok {
+										dnsCache[host.Name] = map[string]string{}
+									}
+									
+									mask := binary.BigEndian.Uint32(ipnet.Mask)
+									start := binary.BigEndian.Uint32(ipnet.IP)
+									finish := (start & mask) | (mask ^ 0xffffffff)
+									for i := start; i <= finish; i++ {
+											ip := make(net.IP, 4)
+											binary.BigEndian.PutUint32(ip, i)
+											resolvedName, ok := dnsCache[host.Name][ip.String()]
+											
+											if !ok || c.Bool("refresh-cache") {
+												var r net.Resolver
+												const timeout = 10 * time.Millisecond // TODO: VDO: make configurable
+												ctx, cancel := context.WithTimeout(context.TODO(), timeout)
+												defer cancel()
+
+												hostnames, err := r.LookupAddr(ctx, ip.String())
+												if err != nil || len(hostnames) == 0 {
+													dnsCache[host.Name][ip.String()] = ""
+													continue
+												}
+												dnsCache[host.Name][ip.String()] = hostnames[0]
+												resolvedName = hostnames[0]
+											}
+											if resolvedName != "" {
+												newHost := *host											
+												newHost.Name = resolvedName
+												newHost.URL = strings.Replace(newHost.URL, "*", ip.String(), -1)
+												hosts = append(hosts, &newHost)
+											}
+									}
+								}
+							}
 						}
 
 						if c.Bool("quiet") {
@@ -884,8 +948,12 @@ GLOBAL OPTIONS:
 						table := tablewriter.NewWriter(s)
 						table.SetHeader([]string{"ID", "Name", "URL", "Key", "Groups", "Updated", "Created", "Comment", "Hop", "Logging"})
 						table.SetBorder(false)
-						table.SetCaption(true, fmt.Sprintf("Total: %d hosts.", len(hosts)))
+						shown := 0
 						for _, host := range hosts {
+							if !isAdmin && checkACLs(tmpUser, *host, "") != string(dbmodels.ACLActionAllow) {
+								continue
+							}
+							shown++
 							authKey := ""
 							if host.SSHKeyID > 0 {
 								var key dbmodels.SSHKey
@@ -922,6 +990,7 @@ GLOBAL OPTIONS:
 								//FIXME: add some stats about last access time etc
 							})
 						}
+						table.SetCaption(true, fmt.Sprintf("Total: %d hosts.", shown))
 						table.Render()
 						return nil
 					},
