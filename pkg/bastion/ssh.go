@@ -210,7 +210,9 @@ func bastionClientConfig(ctx ssh.Context, host *dbmodels.Host) (*gossh.ClientCon
 	actx := ctx.Value(authContextKey).(*authContext)
 
 	crypto.HostDecrypt(actx.aesKey, host)
-	crypto.SSHKeyDecrypt(actx.aesKey, host.SSHKey)
+	if host.SSHKey != nil {
+	  crypto.SSHKeyDecrypt(actx.aesKey, host.SSHKey)
+	}
 
 	clientConfig, err := host.ClientConfig(dynamicHostKey(actx.db, host))
 	if err != nil {
@@ -221,6 +223,7 @@ func bastionClientConfig(ctx ssh.Context, host *dbmodels.Host) (*gossh.ClientCon
 	if err = actx.db.Preload("Groups").Preload("Groups.ACLs").Where("id = ?", actx.user.ID).First(&tmpUser).Error; err != nil {
 		return nil, err
 	}
+
 	var tmpHost dbmodels.Host
 	if err = actx.db.Preload("Groups").Preload("Groups.ACLs").Where("id = ?", host.ID).First(&tmpHost).Error; err != nil {
 		return nil, err
