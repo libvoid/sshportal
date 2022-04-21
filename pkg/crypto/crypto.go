@@ -15,6 +15,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	gossh "golang.org/x/crypto/ssh"
@@ -239,4 +240,84 @@ func SSHKeyDecrypt(aesKey string, key *dbmodels.SSHKey) {
 		return
 	}
 	key.PrivKey = safeDecrypt([]byte(aesKey), key.PrivKey)
+}
+
+type StreamEncrypter struct {
+  Writer io.Writer
+  Block cipher.Block
+  Stream cipher.Stream
+}
+
+func NewStreamEncrypter(w io.Writer, key []byte) *StreamEncrypter {
+  c, err := aes.NewCipher(key)
+  if err != nil {
+    panic(err)
+  }
+  iv := make([]byte, c.BlockSize())
+	if _, err := rand.Read(iv); err != nil {
+    panic(err)
+	}
+  w.Write(iv)
+  return &StreamEncrypter{
+    Writer: w,
+    Block: c,
+    Stream: cipher.NewCFBEncrypter(c, iv),
+  }
+}
+
+func (ew *StreamEncrypter) Write(b []byte) (int, error) {
+  f := bytes.NewReader(b)
+  bs := ew.Block.BlockSize()
+  written := 0
+  for {
+    buf := make([]byte, bs)
+    out := make([]byte, bs)
+    n, err := io.ReadFull(f, buf)
+    ew.Stream.XORKeyStream(out, func(in []byte, size int) []byte {
+      return append(in, make([]byte, size - len(in))...)
+    }(buf, bs))
+    _, err2 := ew.Writer.Write(out)
+    if err2 != nil {
+      return written, err2
+    }
+    written += n
+    if err != nil {
+      if errors.Is(err, io.EOF) {
+        return written, nil
+      }
+      return written, err
+    }
+  }
+}
+
+func (ew *StreamEncrypter) Close() error { return nil }
+
+func (ew *StreamEncrypter) Decrypt(path string) ([]byte, error) {
+  res := []byte{}
+  f, err := os.Open(path)
+  if err != nil {
+    return res, err
+  }
+  defer f.Close()
+  bs := ew.Block.BlockSize()
+  
+  iv := make([]byte, bs)
+  if _, err := io.ReadFull(f, iv); err != nil {
+    return res, err
+  }
+  
+  ew.Stream = cipher.NewCFBDecrypter(ew.Block, iv)
+  for {
+    buf := make([]byte, bs)
+    out := make([]byte, bs)
+    _, err := io.ReadFull(f, buf)
+    if err != nil {
+      if errors.Is(err, io.EOF) {
+        return res, nil
+      }
+      return res, err
+    }
+    ew.Stream.XORKeyStream(out, buf)
+    res = append(res, out...)
+  }
 }

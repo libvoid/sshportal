@@ -12,6 +12,7 @@ import (
 	"github.com/gliderlabs/ssh"
 	"github.com/pkg/errors"
 	"github.com/sabban/bastion/pkg/logchannel"
+	"moul.io/sshportal/pkg/crypto"
 	gossh "golang.org/x/crypto/ssh"
 )
 
@@ -65,7 +66,7 @@ func multiChannelHandler(conn *gossh.ServerConn, newChan gossh.NewChannel, ctx s
 		actx := ctx.Value(authContextKey).(*authContext)
 		username := actx.user.Name
 		// pipe everything
-		return pipe(lreqs, rreqs, lch, rch, configs[len(configs)-1], user, username, sessionID, newChan)
+		return pipe(lreqs, rreqs, lch, rch, configs[len(configs)-1], user, username, sessionID, newChan, actx.aesKey)
 	case "direct-tcpip":
 		lch, lreqs, err := newChan.Accept()
 		// TODO: defer clean closer
@@ -110,7 +111,7 @@ func multiChannelHandler(conn *gossh.ServerConn, newChan gossh.NewChannel, ctx s
 		actx := ctx.Value(authContextKey).(*authContext)
 		username := actx.user.Name
 		// pipe everything
-		return pipe(lreqs, rreqs, lch, rch, configs[len(configs)-1], user, username, sessionID, newChan)
+		return pipe(lreqs, rreqs, lch, rch, configs[len(configs)-1], user, username, sessionID, newChan, actx.aesKey)
 	default:
 		if err := newChan.Reject(gossh.UnknownChannelType, "unsupported channel type"); err != nil {
 			log.Printf("failed to reject chan: %v", err)
@@ -119,7 +120,7 @@ func multiChannelHandler(conn *gossh.ServerConn, newChan gossh.NewChannel, ctx s
 	}
 }
 
-func pipe(lreqs, rreqs <-chan *gossh.Request, lch, rch gossh.Channel, sessConfig sessionConfig, user string, username string, sessionID uint, newChan gossh.NewChannel) error {
+func pipe(lreqs, rreqs <-chan *gossh.Request, lch, rch gossh.Channel, sessConfig sessionConfig, user string, username string, sessionID uint, newChan gossh.NewChannel, aesKey string) error {
 	defer func() {
 		_ = lch.Close()
 		_ = rch.Close()
@@ -139,8 +140,14 @@ func pipe(lreqs, rreqs <-chan *gossh.Request, lch, rch gossh.Channel, sessConfig
 		defer func() {
 			_ = f.Close()
 		}()
-		log.Printf("Session %v is recorded in %v", channeltype, filename)
-		logWriter = f
+		if aesKey != "" {
+			log.Printf("Encrypted Session %v is recorded in %v", channeltype, filename)
+			ec := crypto.NewStreamEncrypter(f, []byte(aesKey))
+			logWriter = ec
+		} else {
+			log.Printf("Plain Session %v is recorded in %v", channeltype, filename)
+			logWriter = f
+		}
 	}
 
 	if channeltype == "session" {
