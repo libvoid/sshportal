@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 	"net"
+	"log"
 	"context"
 
 	shlex "github.com/anmitsu/go-shlex"
@@ -1679,6 +1680,79 @@ GLOBAL OPTIONS:
 						enc := json.NewEncoder(s)
 						enc.SetIndent("", "  ")
 						return enc.Encode(users)
+					},
+				}, {
+					Name:      "kick",
+					Usage:     "Kills all active sessions for user(s)",
+					ArgsUsage: "USER...",
+					Flags: []cli.Flag{
+						cli.BoolFlag{Name: "force", Usage: "Allows to ban your own user"},
+					},
+					Action: func(c *cli.Context) error {
+						if c.NArg() < 1 {
+							return cli.ShowSubcommandHelp(c)
+						}
+
+						if err := myself.CheckRoles([]string{"admin"}); err != nil {
+							return err
+						}
+						
+						var users []*dbmodels.User
+						if err := dbmodels.UsersByIdentifiers(db, c.Args()).Find(&users).Error; err != nil {
+							return err
+						}
+						
+						for _, user := range users {
+							if user.Email == myself.Email && !c.Bool("force") {
+								continue
+							}
+							if err := db.Model(&dbmodels.Session{}).Where(&dbmodels.Session{User: user, Status: string(dbmodels.SessionStatusActive)}).Update("status", "closed").Error; err != nil {
+								return err
+							}
+							log.Println("User", user.Email, "has been kicked by", myself.Email)
+						}
+						return nil
+					},
+				}, {
+					Name:      "ban",
+					Usage:     "Kills all active sessions for user(s), and wipes all his ssh keys",
+					ArgsUsage: "USER...",
+					Flags: []cli.Flag{
+						cli.StringFlag{Name: "override", Usage: "This action is irreversible: approval is required. Input 'I_understand_this_is_irreversible' to continue"},
+						cli.BoolFlag{Name: "force", Usage: "Allows to ban your own user"},
+					},
+					Action: func(c *cli.Context) error {
+						if c.NArg() < 1 {
+							return cli.ShowSubcommandHelp(c)
+						}
+						
+						if c.String("override") != "I_understand_this_is_irreversible" {
+							return errors.New("Please set the correct --override flag to proceed")
+						}
+
+						if err := myself.CheckRoles([]string{"admin"}); err != nil {
+							return err
+						}
+						
+						var users []*dbmodels.User
+						if err := dbmodels.UsersByIdentifiers(db, c.Args()).Find(&users).Error; err != nil {
+							return err
+						}
+						
+						for _, user := range users {
+							if user.Email == myself.Email && !c.Bool("force")  {
+								continue
+							}
+						
+							if err := db.Where("user_id = ?", user.ID).Delete(&dbmodels.UserKey{}).Error; err != nil {
+								return err
+							}
+							if err := db.Model(&dbmodels.Session{}).Where(&dbmodels.Session{User: user, Status: string(dbmodels.SessionStatusActive)}).Update("status", "closed").Error; err != nil {
+								return err
+							}
+							log.Println("User", user.Email, "has been banned by", myself.Email)
+						}
+						return nil
 					},
 				}, {
 					Name:        "invite",
