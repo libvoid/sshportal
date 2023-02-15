@@ -115,7 +115,7 @@ func server(c *serverConfig) (err error) {
 	srv := &ssh.Server{
 		Addr:    c.bindAddr,
 		Handler: func(s ssh.Session) { bastion.ShellHandler(s, GitTag, GitSha, GitTag) }, // ssh.Server.Handler is the handler for the DefaultSessionHandler
-		Version: fmt.Sprintf("sshportal-%s", GitTag),
+		Version: fmt.Sprintf("sshportal"),
 		ChannelHandlers: map[string]ssh.ChannelHandler{
 			"default": bastion.ChannelHandler,
 		},
