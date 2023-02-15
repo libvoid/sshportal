@@ -351,6 +351,19 @@ func PublicKeyAuthHandler(db *gorm.DB, logsLocation, aclCheckCmd, aesKey, dbDriv
 			if actx.userType() == userTypeInvite {
 				actx.err = fmt.Errorf("invites are only supported for new SSH keys; your ssh key is already associated with the user %q", actx.user.Email)
 			}
+			if actx.userType() == userTypeBastion {
+				log.Printf("Checking if %s has access to %s\n", actx.user.Name, actx.inputUsername)
+				host, err := dbmodels.HostByName(actx.db, actx.inputUsername)
+				if err != nil {
+					actx.err = err
+					return false
+				}
+				_, err = bastionClientConfig(ctx, host)
+				if err != nil {
+					actx.err = err
+					return false
+				}
+			}
 			return true
 		}
 
