@@ -1021,6 +1021,7 @@ GLOBAL OPTIONS:
 						cli.StringFlag{Name: "key, k", Usage: "Link a `KEY` to use for authentication"},
 						cli.StringFlag{Name: "hop, o", Usage: "Change the hop to use for connecting to the server"},
 						cli.StringFlag{Name: "logging, l", Usage: "Logging mode (disabled, input, everything)"},
+						cli.BoolFlag{Name: "reset, r", Usage: "Reset host key associated with the server."},
 						cli.BoolFlag{Name: "unset-hop", Usage: "Remove the hop set for this host"},
 						cli.StringSliceFlag{Name: "assign-group, g", Usage: "Assign the host to a new `HOSTGROUPS`"},
 						cli.StringSliceFlag{Name: "unassign-group", Usage: "Unassign the host from a `HOSTGROUPS`"},
@@ -1054,6 +1055,14 @@ GLOBAL OPTIONS:
 										tx.Rollback()
 										return err
 									}
+								}
+							}
+
+							// Host key
+							if c.Bool("reset") {
+								if err := db.Model(host).Update("HostKey", nil).Error; err != nil {
+									tx.Rollback()
+									return err
 								}
 							}
 
