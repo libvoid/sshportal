@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
-	"net"
 
 	gossh "golang.org/x/crypto/ssh"
 	"gorm.io/gorm"
@@ -296,21 +296,21 @@ func HostByName(db *gorm.DB, name string) (*Host, error) {
 	db.Preload("SSHKey").Where("name = ? AND name NOT LIKE '%/%'", name).Find(&host)
 	if host.Name == "" {
 		// FIXME: add available hosts
-		ips, err := net.LookupIP(name)		
+		ips, err := net.LookupIP(name)
 		if err != nil {
 			return nil, err
 		}
 		var subnetHosts []*Host
 		db.Preload("SSHKey").Where("name LIKE '%/%'", name).Find(&subnetHosts)
 		for _, subnet := range subnetHosts {
-				_, ipnet, err := net.ParseCIDR(subnet.Name)
-				if err != nil {
-					return nil, err
-				}
-				for _, ip := range ips {	
-					if ipnet.Contains(ip) {
-						subnet.URL = strings.Replace(subnet.URL, "*", ip.String(), -1)
-						return subnet, nil
+			_, ipnet, err := net.ParseCIDR(subnet.Name)
+			if err != nil {
+				return nil, err
+			}
+			for _, ip := range ips {
+				if ipnet.Contains(ip) {
+					subnet.URL = strings.Replace(subnet.URL, "*", ip.String(), -1)
+					return subnet, nil
 				}
 			}
 		}
