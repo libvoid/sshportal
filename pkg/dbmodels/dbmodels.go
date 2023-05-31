@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"net"
 
 	gossh "golang.org/x/crypto/ssh"
 	"gorm.io/gorm"
@@ -191,6 +192,7 @@ func GenericNameOrID(db *gorm.DB, identifiers []string) *gorm.DB {
 func (host *Host) DialAddr() string {
 	return fmt.Sprintf("%s:%d", host.Hostname(), host.Port())
 }
+
 func (host *Host) String() string {
 	if host.URL != "" {
 		return host.URL
@@ -291,9 +293,27 @@ func HostsByIdentifiers(db *gorm.DB, identifiers []string) *gorm.DB {
 }
 func HostByName(db *gorm.DB, name string) (*Host, error) {
 	var host Host
-	db.Preload("SSHKey").Where("name = ?", name).Find(&host)
+	db.Preload("SSHKey").Where("name = ? AND name NOT LIKE '%/%'", name).Find(&host)
 	if host.Name == "" {
 		// FIXME: add available hosts
+		ips, err := net.LookupIP(name)		
+		if err != nil {
+			return nil, err
+		}
+		var subnetHosts []*Host
+		db.Preload("SSHKey").Where("name LIKE '%/%'", name).Find(&subnetHosts)
+		for _, subnet := range subnetHosts {
+				_, ipnet, err := net.ParseCIDR(subnet.Name)
+				if err != nil {
+					return nil, err
+				}
+				for _, ip := range ips {	
+					if ipnet.Contains(ip) {
+						subnet.URL = strings.Replace(subnet.URL, "*", ip.String(), -1)
+						return subnet, nil
+				}
+			}
+		}
 		return nil, fmt.Errorf("no such target: %q", name)
 	}
 	return &host, nil

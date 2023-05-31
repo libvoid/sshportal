@@ -61,6 +61,11 @@ func (c authContext) userType() userType {
 
 func dynamicHostKey(db *gorm.DB, host *dbmodels.Host) gossh.HostKeyCallback {
 	return func(hostname string, remote net.Addr, key gossh.PublicKey) error {
+
+		if strings.Contains(host.Name, `/`) {
+			return nil
+		}
+
 		if len(host.HostKey) == 0 {
 			log.Println("Discovering host fingerprint...")
 			return db.Model(host).Update("HostKey", key.Marshal()).Error
