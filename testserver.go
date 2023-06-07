@@ -18,7 +18,7 @@ import (
 )
 
 // testServer is an hidden handler used for integration tests
-func testServer(c *cli.Context) error {
+func testServer(_ *cli.Context) error {
 	ssh.Handle(func(s ssh.Session) {
 		helloMsg := struct {
 			User    string

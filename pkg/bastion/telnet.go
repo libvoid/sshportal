@@ -18,7 +18,7 @@ type bastionTelnetCaller struct {
 	ssh ssh.Session
 }
 
-func (caller bastionTelnetCaller) CallTELNET(ctx telnet.Context, w telnet.Writer, r telnet.Reader) {
+func (caller bastionTelnetCaller) CallTELNET(_ telnet.Context, w telnet.Writer, r telnet.Reader) {
 	go func(writer io.Writer, reader io.Reader) {
 		var buffer [1]byte // Seems like the length of the buffer needs to be small, otherwise will have to wait for buffer to fill up.
 		p := buffer[:]

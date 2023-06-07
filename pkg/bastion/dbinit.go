@@ -3,7 +3,7 @@ package bastion // import "moul.io/sshportal/pkg/bastion"
 import (
 	"crypto/rand"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"math/big"
 	"os"
@@ -19,7 +19,7 @@ import (
 )
 
 func DBInit(db *gorm.DB) error {
-	log.SetOutput(ioutil.Discard)
+	log.SetOutput(io.Discard)
 	log.SetOutput(os.Stderr)
 
 	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{

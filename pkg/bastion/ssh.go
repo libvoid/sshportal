@@ -140,7 +140,7 @@ func ChannelHandler(srv *ssh.Server, conn *gossh.ServerConn, newChan gossh.NewCh
 					// FIXME: force close all channels
 					_ = ch.Close()
 					return
-				}				
+				}
 				sessionConfigs = append([]sessionConfig{{
 					Addr:         currentHost.DialAddr(),
 					ClientConfig: clientConfig,
@@ -174,7 +174,7 @@ func ChannelHandler(srv *ssh.Server, conn *gossh.ServerConn, newChan gossh.NewCh
 				_ = ch.Close()
 				return
 			}
-			go func(cnx *gossh.ServerConn, dbConn *gorm.DB, sessionID uint) {
+			go func(_ *gossh.ServerConn, dbConn *gorm.DB, sessionID uint) {
 				for {
 					sess := dbmodels.Session{Model: gorm.Model{ID: sessionID}, Status: string(dbmodels.SessionStatusActive)}
 					if err := dbConn.First(&sess).Error; err != nil || sess.Status != string(dbmodels.SessionStatusActive) {

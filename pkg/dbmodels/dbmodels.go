@@ -309,7 +309,7 @@ func HostByName(db *gorm.DB, name string) (*Host, error) {
 			}
 			for _, ip := range ips {
 				if ipnet.Contains(ip) {
-					subnet.URL = strings.Replace(subnet.URL, "*", ip.String(), -1)
+					subnet.URL = strings.ReplaceAll(subnet.URL, "*", ip.String())
 					return subnet, nil
 				}
 			}

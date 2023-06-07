@@ -48,7 +48,7 @@ func newLogTunnel(channel ssh.Channel, writer io.WriteCloser, host string) io.Re
 	}
 }
 
-func (l *logTunnel) Read(data []byte) (int, error) {
+func (l *logTunnel) Read(_ []byte) (int, error) {
 	return 0, errors.New("logTunnel.Read is not implemented")
 }
 

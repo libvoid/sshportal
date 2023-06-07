@@ -98,11 +98,11 @@ func server(c *serverConfig) (err error) {
 	}()
 
 	if err = sqlDB.Ping(); err != nil {
-		return
+		return err
 	}
 
 	if err = bastion.DBInit(db); err != nil {
-		return
+		return err
 	}
 
 	// create TCP listening socket
@@ -115,7 +115,7 @@ func server(c *serverConfig) (err error) {
 	srv := &ssh.Server{
 		Addr:    c.bindAddr,
 		Handler: func(s ssh.Session) { bastion.ShellHandler(s, GitTag, GitSha, GitTag) }, // ssh.Server.Handler is the handler for the DefaultSessionHandler
-		Version: fmt.Sprintf("sshportal"),
+		Version: "sshportal",
 		ChannelHandlers: map[string]ssh.ChannelHandler{
 			"default": bastion.ChannelHandler,
 		},

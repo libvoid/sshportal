@@ -931,7 +931,7 @@ GLOBAL OPTIONS:
 										if resolvedName != "" {
 											newHost := *host
 											newHost.Name = resolvedName
-											newHost.URL = strings.Replace(newHost.URL, "*", ip.String(), -1)
+											newHost.URL = strings.ReplaceAll(newHost.URL, "*", ip.String())
 											hosts = append(hosts, &newHost)
 										}
 									}
@@ -1964,9 +1964,9 @@ GLOBAL OPTIONS:
 								tx.Rollback()
 								return err
 							}
-							
+
 							groups := tx.Model(user).Association("Groups")
-							
+
 							if err := groups.Append(&appendGroups); err != nil {
 								tx.Rollback()
 								return err
@@ -1987,7 +1987,7 @@ GLOBAL OPTIONS:
 								tx.Rollback()
 								return err
 							}
-							
+
 							roles := tx.Model(user).Association("Groups")
 
 							if err := roles.Append(&appendRoles); err != nil {

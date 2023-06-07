@@ -2,12 +2,10 @@ package main // import "moul.io/sshportal"
 
 import (
 	"log"
-	"math/rand"
 	"os"
 	"path"
 
 	"github.com/urfave/cli"
-	"moul.io/srand"
 )
 
 var (
@@ -18,8 +16,6 @@ var (
 )
 
 func main() {
-	rand.Seed(srand.MustSecure())
-
 	app := cli.NewApp()
 	app.Name = path.Base(os.Args[0])
 	app.Author = "Manfred Touron"
