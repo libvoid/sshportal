@@ -1,8 +1,10 @@
-version: '3.0'
+version: "3"
 
 services:
   sshportal:
-    image: moul/sshportal
+    build:
+      context: ../../
+      dockerfile: Dockerfile
     environment:
       - SSHPORTAL_DEFAULT_ADMIN_INVITE_TOKEN=integration
     command: server --debug
@@ -12,7 +14,9 @@ services:
       - 2222
 
   testserver:
-    image: moul/sshportal
+    build:
+      context: ../../
+      dockerfile: Dockerfile
     command: _test_server
     ports:
       - 2222

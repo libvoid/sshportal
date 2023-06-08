@@ -1,9 +1,8 @@
 builds:
-  -
-    goos: [linux, darwin]
-    goarch: [386, amd64, arm, arm64]
+  - goos: [linux, darwin, windows]
+    goarch: [386, amd64, arm64]
     ldflags:
-    - -s -w -X main.GitSha={{.ShortCommit}} -X main.GitBranch=master -X main.GitTag={{.Version}}
+      - -s -w -X main.GitSha={{.ShortCommit}} -X main.GitBranch=master -X main.GitTag={{.Version}}
 archives:
   - wrap_in_directory: true
 checksum:
@@ -11,19 +10,10 @@ checksum:
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
-  sort: asc
+  use: git
   filters:
     exclude:
     - '^docs:'
     - '^test:'
-brews:
-  -
-    name: sshportal
-    github:
-      owner: moul
-      name: homebrew-moul
-    commit_author:
-      name: moul-bot
-      email: "m+bot@42.am"
-    homepage: https://manfred.life/sshportal
-    description: "Simple, fun and transparent SSH (and telnet) bastion"
+    - '^style:'
+    - '^ci:'
