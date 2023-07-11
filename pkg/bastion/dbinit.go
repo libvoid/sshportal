@@ -170,9 +170,10 @@ func DBInit(db *gorm.DB) error {
 		}, {
 			ID: "10",
 			Migrate: func(tx *gorm.DB) error {
-				if err := tx.Migrator().DropIndex(&dbmodels.SSHKey{}, "uix_keys_name"); err != nil {
-					return err
-				}
+				// This migration doesn't work anymore after upgrading to latest version of Gorm
+				// if err := tx.Migrator().DropIndex(&dbmodels.SSHKey{}, "uix_keys_name"); err != nil {
+				//		return err
+				//	}
 				return tx.Migrator().CreateIndex(&dbmodels.SSHKey{}, "uix_keys_name")
 			},
 			Rollback: func(tx *gorm.DB) error {
