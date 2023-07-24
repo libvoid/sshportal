@@ -14,7 +14,7 @@ require (
 	github.com/reiver/go-oi v1.0.0
 	github.com/reiver/go-telnet v0.0.0-20180421082511-9ff0b2ab096e
 	github.com/sabban/bastion v0.0.0-20180110125408-b9d3c9b1f4d3
-	github.com/smartystreets/goconvey v1.7.2
+	github.com/smartystreets/goconvey v1.8.1
 	github.com/urfave/cli v1.22.14
 	golang.org/x/crypto v0.11.0
 	golang.org/x/tools v0.11.0
@@ -28,7 +28,7 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/creack/pty v1.1.18 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
-	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
+	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.4.2 // indirect
@@ -41,7 +41,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.17 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/smartystreets/assertions v1.2.0 // indirect
+	github.com/smarty/assertions v1.15.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/term v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
