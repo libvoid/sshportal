@@ -17,7 +17,7 @@ require (
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/urfave/cli v1.22.14
 	golang.org/x/crypto v0.11.0
-	golang.org/x/tools v0.11.0
+	golang.org/x/tools v0.11.1
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/driver/sqlite v1.5.2
