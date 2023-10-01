@@ -3,10 +3,10 @@ module moul.io/sshportal
 require (
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
-	github.com/docker/docker v24.0.5+incompatible
+	github.com/docker/docker v24.0.6+incompatible
 	github.com/dustin/go-humanize v1.0.1
 	github.com/gliderlabs/ssh v0.3.5
-	github.com/go-gormigrate/gormigrate/v2 v2.1.0
+	github.com/go-gormigrate/gormigrate/v2 v2.1.1
 	github.com/kr/pty v1.1.8
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d
 	github.com/olekukonko/tablewriter v0.0.5
@@ -16,8 +16,8 @@ require (
 	github.com/sabban/bastion v0.0.0-20180110125408-b9d3c9b1f4d3
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/urfave/cli v1.22.14
-	golang.org/x/crypto v0.12.0
-	golang.org/x/tools v0.12.0
+	golang.org/x/crypto v0.13.0
+	golang.org/x/tools v0.13.0
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/driver/sqlite v1.5.3
@@ -42,9 +42,9 @@ require (
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/smarty/assertions v1.15.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/term v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
+	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/term v0.12.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
 )
 
 go 1.20
