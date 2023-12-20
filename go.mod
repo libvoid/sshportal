@@ -5,7 +5,7 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/docker/docker v24.0.7+incompatible
 	github.com/dustin/go-humanize v1.0.1
-	github.com/gliderlabs/ssh v0.3.5
+	github.com/gliderlabs/ssh v0.3.6
 	github.com/go-gormigrate/gormigrate/v2 v2.1.1
 	github.com/kr/pty v1.1.8
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d
@@ -17,7 +17,7 @@ require (
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/urfave/cli v1.22.14
 	golang.org/x/crypto v0.17.0
-	golang.org/x/tools v0.16.0
+	golang.org/x/tools v0.16.1
 	gorm.io/driver/mysql v1.5.2
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/driver/sqlite v1.5.4
