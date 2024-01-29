@@ -10,7 +10,7 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/pkg/errors"
-	"github.com/sabban/bastion/pkg/logchannel"
+	"github.com/moul/bastion/pkg/logchannel"
 	gossh "golang.org/x/crypto/ssh"
 )
 

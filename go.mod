@@ -9,11 +9,11 @@ require (
 	github.com/go-gormigrate/gormigrate/v2 v2.1.1
 	github.com/kr/pty v1.1.8
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d
+	github.com/moul/bastion v0.0.0-20200502094720-e8e001ca766b
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/pkg/errors v0.9.1
 	github.com/reiver/go-oi v1.0.0
 	github.com/reiver/go-telnet v0.0.0-20180421082511-9ff0b2ab096e
-	github.com/sabban/bastion v0.0.0-20180110125408-b9d3c9b1f4d3
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/urfave/cli v1.22.14
 	golang.org/x/crypto v0.17.0
