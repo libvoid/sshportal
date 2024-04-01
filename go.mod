@@ -3,10 +3,10 @@ module moul.io/sshportal
 require (
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
-	github.com/docker/docker v25.0.5+incompatible
+	github.com/docker/docker v26.0.0+incompatible
 	github.com/dustin/go-humanize v1.0.1
-	github.com/gliderlabs/ssh v0.3.6
-	github.com/go-gormigrate/gormigrate/v2 v2.1.1
+	github.com/gliderlabs/ssh v0.3.7
+	github.com/go-gormigrate/gormigrate/v2 v2.1.2
 	github.com/kr/pty v1.1.8
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d
 	github.com/olekukonko/tablewriter v0.0.5
@@ -15,12 +15,12 @@ require (
 	github.com/reiver/go-telnet v0.0.0-20180421082511-9ff0b2ab096e
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/urfave/cli v1.22.14
-	golang.org/x/crypto v0.20.0
-	golang.org/x/tools v0.18.0
-	gorm.io/driver/mysql v1.5.4
-	gorm.io/driver/postgres v1.5.6
+	golang.org/x/crypto v0.21.0
+	golang.org/x/tools v0.19.0
+	gorm.io/driver/mysql v1.5.6
+	gorm.io/driver/postgres v1.5.7
 	gorm.io/driver/sqlite v1.5.5
-	gorm.io/gorm v1.25.7-0.20240204074919-46816ad31dde
+	gorm.io/gorm v1.25.8
 )
 
 require (
@@ -43,8 +43,8 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/smarty/assertions v1.15.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
-	golang.org/x/sys v0.17.0 // indirect
-	golang.org/x/term v0.17.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/term v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )
 
