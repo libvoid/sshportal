@@ -2,7 +2,9 @@
 
 mkdir -p /etc/systemd/system/sshportal.service.d/
 
-if [ -f /tmp/sshportal_mariadb ]; then
+# Only do this on new install or during upgrade if no DB configuration found
+if [ -f /tmp/sshportal_mariadb ] &&
+	{ [ -z "$2" ] || [ ! -f /etc/systemd/system/sshportal.service.d/custom.conf ]; }; then
 	SOCKET="$(mysqladmin variables | grep ".sock " | awk '{print $4}')"
 	readonly SOCKET
 
@@ -13,7 +15,7 @@ Environment=SSHPORTAL_DB_DRIVER=mysql
 Environment=SSHPORTAL_DATABASE_URL=sshportal@unix($SOCKET)/sshportal?charset=utf8&parseTime=true&loc=Local
 END
 	rm -f /tmp/sshportal_mariadb
-else
+elif [ -z "$2" ] || [ ! -f /etc/systemd/system/sshportal.service.d/custom.conf ]; then
 
 tee /etc/systemd/system/sshportal.service.d/custom.conf >/dev/null 2>&1 << END
 [Service]
