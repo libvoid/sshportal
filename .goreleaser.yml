@@ -18,7 +18,8 @@ changelog:
     - '^style:'
     - '^ci:'
 
-draft: true
+release:
+  draft: true
 
 nfpms:
 - file_name_template: "{{ .ConventionalFileName }}"
