@@ -14,9 +14,9 @@ require (
 	github.com/reiver/go-oi v1.0.0
 	github.com/reiver/go-telnet v0.0.0-20180421082511-9ff0b2ab096e
 	github.com/smartystreets/goconvey v1.8.1
-	github.com/urfave/cli v1.22.15
-	golang.org/x/crypto v0.27.0
-	golang.org/x/tools v0.25.0
+	github.com/urfave/cli v1.22.16
+	golang.org/x/crypto v0.28.0
+	golang.org/x/tools v0.26.0
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/driver/sqlite v1.5.6
@@ -24,7 +24,7 @@ require (
 )
 
 require (
-	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
 	github.com/creack/pty v1.1.18 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
@@ -43,9 +43,9 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/smarty/assertions v1.15.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
-	golang.org/x/term v0.24.0 // indirect
-	golang.org/x/text v0.18.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/term v0.25.0 // indirect
+	golang.org/x/text v0.19.0 // indirect
 )
 
 go 1.20
