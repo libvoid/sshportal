@@ -3,9 +3,9 @@ module moul.io/sshportal
 require (
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
-	github.com/docker/docker v27.3.1+incompatible
+	github.com/docker/docker v27.4.1+incompatible
 	github.com/dustin/go-humanize v1.0.1
-	github.com/gliderlabs/ssh v0.3.7
+	github.com/gliderlabs/ssh v0.3.8
 	github.com/go-gormigrate/gormigrate/v2 v2.1.3
 	github.com/kr/pty v1.1.8
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d
@@ -16,10 +16,10 @@ require (
 	github.com/smartystreets/goconvey v1.8.1
 	github.com/urfave/cli v1.22.16
 	golang.org/x/crypto v0.31.0
-	golang.org/x/tools v0.27.0
+	golang.org/x/tools v0.28.0
 	gorm.io/driver/mysql v1.5.7
-	gorm.io/driver/postgres v1.5.10
-	gorm.io/driver/sqlite v1.5.6
+	gorm.io/driver/postgres v1.5.11
+	gorm.io/driver/sqlite v1.5.7
 	gorm.io/gorm v1.25.12
 )
 
